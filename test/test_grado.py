@@ -47,6 +47,9 @@ class GradoTestCase(unittest.TestCase):
         grado= nuevogrado()
         grado.nombre = "Segundo"
         grado.descripcion = "Descripción del segundo grado"
+        grado_actualizado = GradoService.actualizar(grado.id, grado)
+        self.assertEqual(grado_actualizado.nombre, "Segundo")
+        self.assertEqual(grado_actualizado.descripcion, "Descripción del segundo grado")
 
     def test_borrar(self):
         universidad = nuevogrado()
@@ -54,5 +57,3 @@ class GradoTestCase(unittest.TestCase):
         self.assertTrue(borrado)
         resultado = GradoService.buscar_por_id(universidad.id)
         self.assertIsNone(resultado)
-
-  

@@ -22,6 +22,7 @@ class TipoEspecialidadService:
         if not tipoespecialidad_existente:
             return None
         tipoespecialidad_existente.nombre = tipoespecialidad.nombre
+        tipoespecialidad_existente.nivel = tipoespecialidad.nivel
         return TipoEspecialidadRepository.actualizar(tipoespecialidad_existente)
     
 
