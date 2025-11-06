@@ -1,6 +1,8 @@
 from marshmallow import fields, Schema, post_load, validate
 from app.models import Especialidad
 from .base_mapping import BaseMapping
+from .alumno_mapping import AlumnoMapping
+from .facultad_mapping import FacultadMapping
 
 
 class EspecialidadMapping(BaseMapping):
@@ -16,3 +18,7 @@ class EspecialidadMapping(BaseMapping):
 
     def __init__(self, *args, **kwargs):
         super().__init__(model_class=Especialidad,*args, **kwargs)
+    
+class EspecialidadAlumnosFacultadMapping(Schema):
+    facultad = fields.Nested(FacultadMapping) 
+    alumnos = fields.Nested(AlumnoMapping, many=True)
