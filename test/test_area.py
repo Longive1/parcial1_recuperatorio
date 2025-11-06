@@ -6,19 +6,12 @@ from app.models.area import Area
 from app.services import AreaService
 from test.instancias import nuevaarea
 from app import db
+from test.base import BaseTestCase
 
-class AreaTestCase(unittest.TestCase):
+class AreaTestCase(BaseTestCase):
     def setUp(self):
-        os.environ['FLASK_CONTEXT'] = 'testing'
-        self.app = create_app()
-        self.app_context = self.app.app_context()
-        self.app_context.push()
-        db.create_all()
-
-    def tearDown(self):
-        db.session.remove()
-        db.drop_all()
-        self.app_context.pop()
+        super().setUp()
+        self.service=AreaService()
 
     def test_crear(self):
         area = nuevaarea()
@@ -29,26 +22,26 @@ class AreaTestCase(unittest.TestCase):
 
     def test_buscar_por_id(self):
         area = nuevaarea()
-        r = AreaService.buscar_por_id(area.id)
+        r = self.service.buscar_por_id(area.id)
         self.assertIsNotNone(r)
         self.assertEqual(r.nombre, "Matematica")
 
     def test_buscar_todos(self):
         area1 = nuevaarea("Matematica")
         area2 = nuevaarea("nombre2")
-        areas = AreaService.buscar_todos()
+        areas = self.service.buscar_todos()
         self.assertIsNotNone(areas)
         self.assertEqual(len(areas), 2)
 
     def test_actualizar(self):
         area = nuevaarea()
         area.nombre = "nombre actualizado"
-        area_actualizado = AreaService.actualizar(area.id, area)
+        area_actualizado = self.service.actualizar(area.id, area)
         self.assertEqual(area_actualizado.nombre, "nombre actualizado")
 
     def test_borrar(self):
         area = nuevaarea()
-        borrado= AreaService.borrar_por_id(area.id)
+        borrado= self.service.borrar_por_id(area.id)
         self.assertTrue(borrado)
-        resultado = AreaService.buscar_por_id(area.id)
+        resultado = self.service.buscar_por_id(area.id)
         self.assertIsNone(resultado)

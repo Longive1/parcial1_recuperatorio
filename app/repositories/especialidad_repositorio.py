@@ -1,33 +1,7 @@
-from app import db
 from app.models import Especialidad
+from .base_repositorios import BaseRepository
 
-class EspecialidadRepository:
+class EspecialidadRepository(BaseRepository):
 
-    @staticmethod
-    def crear(especialidad):
-        db.session.add(especialidad)
-        db.session.commit()
-
-    @staticmethod
-    def buscar_por_id(id: int):
-        return db.session.query(Especialidad).filter_by(id=id).first()
-
-    @staticmethod
-    def buscar_todos():
-        return db.session.query(Especialidad).all()
-
-    @staticmethod
-    def actualizar(especialidad) -> Especialidad:
-        db.session.merge(especialidad)
-        db.session.commit()
-        return especialidad
-    
-    @staticmethod
-    def borrar_por_id(id: int) -> bool:
-        especialidad = db.session.query(Especialidad).filter_by(id=id).first()
-        if not especialidad:
-            return False
-        db.session.delete(especialidad)
-        db.session.commit()
-        return True
-
+    def __init__(self):
+        super().__init__(Especialidad)

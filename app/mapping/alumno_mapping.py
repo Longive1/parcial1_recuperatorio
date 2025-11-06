@@ -1,8 +1,8 @@
 from marshmallow import Schema, fields, post_load, validate
 from app.models import Alumno
+from .base_mapping import BaseMapping
 
-class AlumnoMapping(Schema):
-    hashid = fields.String(dump_only = True) 
+class AlumnoMapping(BaseMapping):
     nombre = fields.String(required=True, validate=validate.Length(min=1, max=50))
     apellido = fields.String(required=True, validate=validate.Length(min=1, max=50))
     nrodocumento = fields.String(required=True, validate=validate.Length(min=1, max=50))
@@ -14,6 +14,5 @@ class AlumnoMapping(Schema):
     
     especialidad_id = fields.Integer(required=True)
 
-    @post_load
-    def nuevo_alumno(self, data, **kwargs):
-        return Alumno(**data)
+    def __init__(self, *args, **kwargs):
+        super().__init__(model_class=Alumno,*args, **kwargs)

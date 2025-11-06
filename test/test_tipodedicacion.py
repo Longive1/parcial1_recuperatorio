@@ -6,19 +6,13 @@ from app.models.tipodedicacion import TipoDedicacion
 from app.services import TipoDedicacionService
 from app import db
 from test.instancias import nuevotipodedicacion
+from test.base import BaseTestCase 
 
-class TipoDedicacionTestCase(unittest.TestCase):
+class TipoDedicacionTestCase(BaseTestCase):
+    
     def setUp(self):
-        os.environ['FLASK_CONTEXT'] = 'testing' 
-        self.app = create_app()
-        self.app_context = self.app.app_context()
-        self.app_context.push()
-        db.create_all()
-
-    def tearDown(self):
-        db.session.remove()
-        db.drop_all()
-        self.app_context.pop()
+        super().setUp()
+        self.service = TipoDedicacionService()
 
     def test_crear(self):
         tipodedicacion = nuevotipodedicacion()
@@ -30,7 +24,7 @@ class TipoDedicacionTestCase(unittest.TestCase):
 
     def test_buscar_por_id(self):
         tipodedicacion = nuevotipodedicacion()
-        r=TipoDedicacionService.buscar_por_id(tipodedicacion.id)
+        r=self.service.buscar_por_id(tipodedicacion.id)
         self.assertIsNotNone(r)
         self.assertEqual(r.nombre, "Dedicacion Completa")
         self.assertEqual(r.observacion, "Observacion de prueba")
@@ -38,21 +32,21 @@ class TipoDedicacionTestCase(unittest.TestCase):
     def test_buscar_todos(self):
         tipodedicacion1 = nuevotipodedicacion()
         tipodedicacion2 = nuevotipodedicacion("Dedicacion Completa 2", "Observacion de prueba 2")
-        dedicaciones = TipoDedicacionService.buscar_todos()
+        dedicaciones = self.service.buscar_todos()
         self.assertIsNotNone(dedicaciones)
         self.assertEqual(len(dedicaciones), 2)
 
     def test_actualizar(self):
         tipodedicacion = nuevotipodedicacion()
         tipodedicacion.nombre = "Dedicacion actualizada"
-        tipodededicacion_actualizado = TipoDedicacionService.actualizar(tipodedicacion.id ,tipodedicacion)
+        tipodededicacion_actualizado = self.service.actualizar(tipodedicacion.id ,tipodedicacion)
         self.assertEqual(tipodededicacion_actualizado.nombre, "Dedicacion actualizada")
 
     def test_borrar(self):
         tipodedicacion = nuevotipodedicacion()
-        borrado = TipoDedicacionService.borrar_por_id(tipodedicacion.id)
+        borrado = self.service.borrar_por_id(tipodedicacion.id)
         self.assertTrue(borrado)
-        resultado = TipoDedicacionService.buscar_por_id(tipodedicacion.id)
+        resultado = self.service.buscar_por_id(tipodedicacion.id)
         self.assertIsNone(resultado)
 
     

@@ -1,39 +1,25 @@
 from flask import jsonify, Blueprint, request
 
 from app.mapping.departamento_mapping import DepartamentoMapping
-from app.services.departamento_service import DepartamentoService
+from app.services.departamento_service import DepartamentoService 
+from .base_resource import BaseResource
+from .utils import register_crud_resource
 
 departamento_bp = Blueprint('departamento', __name__)
-departamento_mapping = DepartamentoMapping()
+departamento_service = DepartamentoService()
+departamento_schema = DepartamentoMapping()
 
+class DepartamentoResource(BaseResource):
+    def __init__(self):
+        super().__init__(
+            service=departamento_service,
+            schema=departamento_schema,
+            nombre_entidad="Departamento"
+        )
 
-@departamento_bp.route('/departamento', methods=['GET'])
-def buscar_todos():
-    departamentos = DepartamentoService.buscar_todos()
-    return departamento_mapping.dump(departamentos, many=True), 200
-
-
-@departamento_bp.route('/departamento/<hashid:id>', methods=['GET'])
-def buscar_por_id(id):
-    departamento = DepartamentoService.buscar_por_id(id)
-    return departamento_mapping.dump(departamento), 200
-
-
-@departamento_bp.route('/departamento', methods=['POST'])
-def crear():
-    departamento = departamento_mapping.load(request.get_json())
-    DepartamentoService.crear(departamento)
-    return jsonify("Departamento creado exitosamente"), 200
-
-
-@departamento_bp.route('/departamento/<hashid:id>', methods=['PUT'])
-def actualizar(id):
-    departamento = departamento_mapping.load(request.get_json())
-    DepartamentoService.actualizar(id, departamento)
-    return jsonify("Departamento actualizado exitosamente"), 200
-
-
-@departamento_bp.route('/departamento/<hashid:id>', methods=['DELETE'])
-def borrar_por_id(id):
-    DepartamentoService.borrar_por_id(id)
-    return jsonify("Departamento borrado exitosamente"), 200
+register_crud_resource(
+    blueprint=departamento_bp,
+    resource_class=DepartamentoResource,
+    view_name='departamento_api',
+    url_prefix='departamento'
+)

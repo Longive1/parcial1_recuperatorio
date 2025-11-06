@@ -1,30 +1,19 @@
 from app.models import Grado
 from app.repositories import GradoRepository
+from .base_service import BaseService
 
 
-class GradoService:
+class GradoService(BaseService):
 
-    @staticmethod
-    def crear(grado: Grado):
-        GradoRepository.crear(grado)
+    def __init__(self):
+        repository = GradoRepository()
 
-    @staticmethod
-    def buscar_por_id(id: int) -> Grado:
-        return GradoRepository.buscar_por_id(id)
+        super().__init__(repository)
 
-    @staticmethod
-    def buscar_todos() -> list[Grado]:
-        return GradoRepository.buscar_todos()
-
-    @staticmethod
-    def actualizar(id: int, grado: Grado) -> Grado:
-        grado_existente = GradoRepository.buscar_por_id(grado.id)
+    def actualizar(self, id: int, data: Grado) -> Grado:
+        grado_existente = self.repository.buscar_por_id(id)
         if not grado_existente:
             return None
-        grado_existente.nombre = grado.nombre
-        grado_existente.descripcion = grado.descripcion
-        return GradoRepository.actualizar(grado_existente)
-
-    @staticmethod
-    def borrar_por_id(id: int) -> bool:
-        return GradoRepository.borrar_por_id(id)
+        grado_existente.nombre = data.nombre
+        grado_existente.descripcion = data.descripcion
+        return self.repository.actualizar(grado_existente)

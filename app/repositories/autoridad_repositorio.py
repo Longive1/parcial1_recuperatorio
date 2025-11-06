@@ -1,34 +1,10 @@
 from app import db
 from app.models import Autoridad, Materia, Facultad
+from .base_repositorios import BaseRepository
 
-class AutoridadRepository:
-    @staticmethod
-    def crear(autoridad):
-        db.session.add(autoridad)
-        db.session.commit()
-
-    @staticmethod
-    def buscar_por_id(id: int):
-        return db.session.query(Autoridad).filter_by(id=id).first()
-
-    @staticmethod
-    def buscar_todos():
-        return db.session.query(Autoridad).all()
-
-    @staticmethod
-    def actualizar(autoridad) -> Autoridad:
-        db.session.merge(autoridad)
-        db.session.commit()
-        return autoridad
-    
-    @staticmethod
-    def borrar_por_id(id: int) -> bool:
-        autoridad = db.session.query(Autoridad).filter_by(id=id).first()
-        if not autoridad:
-            return False
-        db.session.delete(autoridad)
-        db.session.commit()
-        return True
+class AutoridadRepository(BaseRepository):
+    def __init__(self):
+        super().__init__(Autoridad)
 
     @staticmethod
     def asociar_materia(autoridad: Autoridad, materia: Materia):

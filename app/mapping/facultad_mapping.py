@@ -1,9 +1,9 @@
 from marshmallow import fields, Schema, post_load, validate
 from app.models import Facultad
+from .base_mapping import BaseMapping
 
 
-class FacultadMapping(Schema):
-    hashid = fields.String(dump_only = True)
+class FacultadMapping(BaseMapping):
     nombre = fields.String(required=True, validate=validate.Length(min=1, max=100))
     abreviatura = fields.String(required=True, validate=validate.Length(min=1, max=10))
     directorio = fields.String(required=True, validate=validate.Length(min=1, max=100))
@@ -17,7 +17,5 @@ class FacultadMapping(Schema):
 
     universidad_id = fields.Integer(required=True)
 
-#TODO Preguntar por autoridad
-    @post_load
-    def nueva_facultad(self, data, **kwargs):
-        return Facultad(**data)
+    def __init__(self, *args, **kwargs):
+        super().__init__(model_class=Facultad,*args, **kwargs)

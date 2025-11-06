@@ -1,34 +1,25 @@
 from flask import jsonify, Blueprint, request
 
 from app.mapping.tipodedicacion_mapping import TipoDedicacionMapping
-from app.services.tipodedicacion_service import TipoDedicacionService
+from app.services.tipodedicacion_service import TipoDedicacionService 
+from .base_resource import BaseResource
+from .utils import register_crud_resource
 
 tipodedicacion_bp = Blueprint('tipodedicacion', __name__)
-tipodedicacion_mapping = TipoDedicacionMapping()
+tipodedicacion_service = TipoDedicacionService()
+tipodedicacion_schema = TipoDedicacionMapping()
 
-@tipodedicacion_bp.route('/tipodedicacion', methods=['GET'])
-def buscar_todos():
-    tipo_dedicaciones= TipoDedicacionService.buscar_todos()
-    return tipodedicacion_mapping.dump(tipo_dedicaciones, many=True), 200
+class TipoDedicacionResource(BaseResource):
+    def __init__(self):
+        super().__init__(
+            service=tipodedicacion_service,
+            schema=tipodedicacion_schema,
+            nombre_entidad="Tipo Dedicación"
+        )
 
-@tipodedicacion_bp.route('/tipodedicacion/<hashid:id>', methods=['GET'])
-def buscar_por_id(id):
-    tipo_dedicacion = TipoDedicacionService.buscar_por_id(id)
-    return tipodedicacion_mapping.dump(tipo_dedicacion), 200
-
-@tipodedicacion_bp.route('/tipodedicacion', methods=['POST'])
-def crear():
-    tipodedicacion= tipodedicacion_mapping.load(request.get_json())
-    TipoDedicacionService.crear(tipodedicacion)
-    return jsonify("Tipo dedicación creado exitosamente"), 200
-
-@tipodedicacion_bp.route('/tipodedicacion/<hashid:id>', methods=['PUT'])
-def actualizar(id):
-    tipodedicacion = tipodedicacion_mapping.load(request.get_json())
-    TipoDedicacionService.actualizar(id, tipodedicacion)
-    return jsonify("Tipo dedicación actualizado exitosamente"), 200
-
-@tipodedicacion_bp.route('/tipodedicacion/<hashid:id>', methods=['DELETE'])
-def borrar_por_id(id):
-    TipoDedicacionService.borrar_por_id(id)
-    return jsonify("Tipo dedicación borrado exitosamente"), 200
+register_crud_resource(
+    blueprint=tipodedicacion_bp,
+    resource_class=TipoDedicacionResource,
+    view_name='tipodedicacion_api',
+    url_prefix='tipodedicacion'
+)

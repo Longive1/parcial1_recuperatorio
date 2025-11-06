@@ -1,10 +1,10 @@
 from marshmallow import fields, Schema, post_load, validate
 from app.models import CategoriaCargo
+from .base_mapping import BaseMapping
 
-class CategoriaCargoMapping(Schema):
+class CategoriaCargoMapping(BaseMapping):
     hashid = fields.String(dump_only = True)
     nombre = fields.String(required=True, validate=validate.Length(min=1, max=30))
     
-    @post_load
-    def nueva_categoriacargo(self, data, **kwargs):
-        return CategoriaCargo(**data)
+    def __init__(self, *args, **kwargs):
+        super().__init__(model_class=CategoriaCargo,*args, **kwargs)

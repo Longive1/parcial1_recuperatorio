@@ -6,19 +6,12 @@ from app.models.tipodocumento import TipoDocumento
 from app.services import TipoDocumentoService
 from test.instancias import nuevotipodocumento
 from app import db
+from test.base import BaseTestCase 
 
-class TipoDocumentoTestCase(unittest.TestCase):
+class TipoDocumentoTestCase(BaseTestCase):
     def setUp(self):
-        os.environ['FLASK_CONTEXT'] = 'testing'
-        self.app = create_app()
-        self.app_context = self.app.app_context()
-        self.app_context.push()
-        db.create_all()
-
-    def tearDown(self):
-        db.session.remove()
-        db.drop_all()
-        self.app_context.pop()
+        super().setUp()
+        self.service = TipoDocumentoService()
 
     def test_crear(self):
         tipodocumento = nuevotipodocumento()
@@ -29,7 +22,7 @@ class TipoDocumentoTestCase(unittest.TestCase):
 
     def test_buscar_por_id(self):
         tipodocumento = nuevotipodocumento()
-        r=TipoDocumentoService.buscar_por_id(tipodocumento.id)
+        r=self.service.buscar_por_id(tipodocumento.id)
         self.assertIsNotNone(r)
         self.assertEqual(r.dni, 46291002)
         self.assertEqual(r.libreta_civica, "nacional")
@@ -37,19 +30,19 @@ class TipoDocumentoTestCase(unittest.TestCase):
     def test_buscar_todos(self):
         tipodocumento1 = nuevotipodocumento()
         tipodocumento2 = nuevotipodocumento(48291002, "23456789", "98765432", "CD123456")
-        documentos = TipoDocumentoService.buscar_todos()
+        documentos = self.service.buscar_todos()
         self.assertIsNotNone(documentos)
         self.assertEqual(len(documentos), 2)
 
     def test_actualizar(self):
         tipodocumento = nuevotipodocumento()
         tipodocumento.dni = 89291002
-        tipodocumento_actualizado = TipoDocumentoService.actualizar(tipodocumento.id, tipodocumento)
+        tipodocumento_actualizado = self.service.actualizar(tipodocumento.id, tipodocumento)
         self.assertEqual(tipodocumento_actualizado.dni, 89291002)
     
     def test_borrar(self):
         tipodocumento = nuevotipodocumento()
-        borrado = TipoDocumentoService.borrar_por_id(tipodocumento.id)
+        borrado = self.service.borrar_por_id(tipodocumento.id)
         self.assertTrue(borrado)
-        resultado = TipoDocumentoService.buscar_por_id(tipodocumento.id)
+        resultado = self.service.buscar_por_id(tipodocumento.id)
         self.assertIsNone(resultado)

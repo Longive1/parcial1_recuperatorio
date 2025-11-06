@@ -1,30 +1,18 @@
 from app.models import TipoDedicacion
 from app.repositories import TipoDedicacionRepository
+from .base_service import BaseService
 
-class TipoDedicacionService:
+class TipoDedicacionService(BaseService):
 
-    @staticmethod
-    def crear(tipodedicacion):
-        return TipoDedicacionRepository.crear(tipodedicacion)
-    
-    @staticmethod
-    def buscar_por_id(id: int) -> TipoDedicacion:
-        return TipoDedicacionRepository.buscar_por_id(id)
-    
-    @staticmethod
-    def buscar_todos() -> list[TipoDedicacion]:
-        return TipoDedicacionRepository.buscar_todos()
-    
-    @staticmethod
-    def actualizar(id: int, tipodedicacion: TipoDedicacion) -> TipoDedicacion:
-        tipodedicacion_existente = TipoDedicacionRepository.buscar_por_id(id)
-        if not tipodedicacion_existente:
+    def __init__(self):
+        repository = TipoDedicacionRepository()
+
+        super().__init__(repository)
+
+    def actualizar(self, id: int, data: TipoDedicacion) -> TipoDedicacion:
+        existente = self.repository.buscar_por_id(id)
+        if not existente:
             return None
-        tipodedicacion_existente.nombre = tipodedicacion.nombre
-        tipodedicacion_existente.observacion = tipodedicacion.observacion
-        return TipoDedicacionRepository.actualizar(tipodedicacion_existente)
-    
-    @staticmethod
-    def borrar_por_id(id: int) -> bool:
-        return TipoDedicacionRepository.borrar_por_id(id)
-    
+        existente.nombre = data.nombre
+        existente.observacion = data.observacion
+        return self.repository.actualizar(existente)

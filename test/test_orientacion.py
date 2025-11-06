@@ -7,21 +7,12 @@ from app.services import OrientacionService
 from test.instancias import nuevaorientacion
 from app import db
 from datetime import date
-
-
-
-class OrientacionTestCase(unittest.TestCase):
+from test.base import BaseTestCase 
+ 
+class OrientacionTestCase(BaseTestCase):
     def setUp(self):
-        os.environ['FLASK_CONTEXT'] = 'testing'
-        self.app = create_app()
-        self.app_context = self.app.app_context()
-        self.app_context.push()
-        db.create_all()
-
-    def tearDown(self):
-        db.session.remove()
-        db.drop_all()
-        self.app_context.pop()
+        super().setUp()
+        self.service = OrientacionService()
 
 
     def test_crear(self):
@@ -35,7 +26,7 @@ class OrientacionTestCase(unittest.TestCase):
 
     def test_buscar_por_id(self):
         orientacion = nuevaorientacion()
-        r=OrientacionService.buscar_por_id(orientacion.id)
+        r=self.service.buscar_por_id(orientacion.id)
         self.assertIsNotNone(r)
         self.assertEqual(r.nombre, "Orientacion 1")
 
@@ -43,24 +34,19 @@ class OrientacionTestCase(unittest.TestCase):
         orientacion1 = nuevaorientacion()
         orientacion2 = nuevaorientacion(nombre="Orientacion B")
 
-        orientaciones = OrientacionService.buscar_todos()
+        orientaciones = self.service.buscar_todos()
         self.assertIsNotNone(orientaciones)
         self.assertGreaterEqual(len(orientaciones), 2)
 
     def test_actualizar(self):
         orientacion = nuevaorientacion()
         orientacion.nombre = "Orientacion Actualizada"
-        orientacion_actualizada = OrientacionService.actualizar(orientacion.id, orientacion)
+        orientacion_actualizada = self.service.actualizar(orientacion.id, orientacion)
         self.assertEqual(orientacion_actualizada.nombre, "Orientacion Actualizada")
 
     def test_borrar(self):
         orientacion = nuevaorientacion()
-        borrado = OrientacionService.borrar_por_id(orientacion.id)
+        borrado = self.service.borrar_por_id(orientacion.id)
         self.assertTrue(borrado)
-        resultado = OrientacionService.buscar_por_id(orientacion.id)
+        resultado = self.service.buscar_por_id(orientacion.id)
         self.assertIsNone(resultado)
-
-
-
-
-

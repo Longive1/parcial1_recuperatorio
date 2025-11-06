@@ -6,19 +6,13 @@ from app.models.departamento import Departamento
 from app.services import DepartamentoService
 from app import db
 from test.instancias import nuevodepartamento
+from test.base import BaseTestCase
 
-class DepartamentoTestCase(unittest.TestCase):
+class DepartamentoTestCase(BaseTestCase):
     def setUp(self):
-        os.environ['FLASK_CONTEXT'] = 'testing'
-        self.app = create_app()
-        self.app_context = self.app.app_context()
-        self.app_context.push()
-        db.create_all()
+        super().setUp()
+        self.service=DepartamentoService()
 
-    def tearDown(self):
-        db.session.remove()
-        db.drop_all()
-        self.app_context.pop()
 
     def test_crear(self):
         departamento = nuevodepartamento()
@@ -29,7 +23,7 @@ class DepartamentoTestCase(unittest.TestCase):
 
     def test_buscar_por_id(self):
         departamento = nuevodepartamento()
-        r=DepartamentoService.buscar_por_id(departamento.id)
+        r=self.service.buscar_por_id(departamento.id)
         self.assertIsNotNone(r)
         self.assertEqual(r.nombre, "Matematicas")
         
@@ -37,21 +31,21 @@ class DepartamentoTestCase(unittest.TestCase):
     def test_buscar_todos(self):
         departamento1 = nuevodepartamento()
         departamento2 = nuevodepartamento("Fisica")
-        departamentos = DepartamentoService.buscar_todos()
+        departamentos = self.service.buscar_todos()
         self.assertIsNotNone(departamentos)
         self.assertEqual(len(departamentos), 2)
 
     def test_actualizar(self):
         departamento = nuevodepartamento()
         departamento.nombre = "Matematicas actualizado"
-        departamento_actualizado = DepartamentoService.actualizar(departamento.id, departamento)
+        departamento_actualizado = self.service.actualizar(departamento.id, departamento)
         self.assertEqual(departamento_actualizado.nombre, "Matematicas actualizado")
     
     def test_borrar(self):
         departamento = nuevodepartamento()
-        borrado= DepartamentoService.borrar_por_id(departamento.id)
+        borrado= self.service.borrar_por_id(departamento.id)
         self.assertTrue(borrado)
-        resultado = DepartamentoService.buscar_por_id(departamento.id)
+        resultado = self.service.buscar_por_id(departamento.id)
         self.assertIsNone(resultado)
         
     

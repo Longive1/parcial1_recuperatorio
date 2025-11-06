@@ -1,34 +1,25 @@
 from flask import jsonify, Blueprint, request
 
 from app.mapping.orientacion_mapping import OrientacionMapping
-from app.services.orientacion_service import OrientacionService
+from app.services.orientacion_service import OrientacionService 
+from .base_resource import BaseResource
+from .utils import register_crud_resource
 
 orientacion_bp = Blueprint('orientacion', __name__)
-orientacion_mapping = OrientacionMapping()
+orientacion_service = OrientacionService()
+orientacion_schema = OrientacionMapping()
 
-@orientacion_bp.route('/orientacion', methods=['GET'])
-def buscar_todos():
-    orientaciones = OrientacionService.buscar_todos()
-    return orientacion_mapping.dump(orientaciones, many=True), 200
+class OrientacionResource(BaseResource):
+    def __init__(self):
+        super().__init__(
+            service=orientacion_service,
+            schema=orientacion_schema,
+            nombre_entidad="Orientacion"
+        )
 
-@orientacion_bp.route('/orientacion/<hashid:id>', methods=['GET'])
-def buscar_por_id(id):
-    orientacion = OrientacionService.buscar_por_id(id)
-    return orientacion_mapping.dump(orientacion), 200
-
-@orientacion_bp.route('/orientacion', methods=['POST'])
-def crear():
-    orientacion = orientacion_mapping.load(request.get_json())
-    OrientacionService.crear(orientacion)
-    return jsonify("Orientacion creada exitosamente"), 200
-
-@orientacion_bp.route('/orientacion/<hashid:id>', methods=['PUT'])
-def actualizar(id):
-    orientacion = orientacion_mapping.load(request.get_json())
-    OrientacionService.actualizar(id, orientacion)
-    return jsonify("Orientacion actualizada exitosamente"), 200
-
-@orientacion_bp.route('/orientacion/<hashid:id>', methods=['DELETE'])
-def borrar_por_id(id):
-    OrientacionService.borrar_por_id(id)
-    return jsonify("Orientacion borrada exitosamente"), 200
+register_crud_resource(
+    blueprint=orientacion_bp,
+    resource_class=OrientacionResource,
+    view_name='orientacion_api',
+    url_prefix='orientacion'
+)

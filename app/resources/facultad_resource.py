@@ -1,34 +1,25 @@
 from flask import jsonify, Blueprint, request
 
 from app.mapping.facultad_mapping import FacultadMapping
-from app.services.facultad_service import FacultadService
+from app.services.facultad_service import FacultadService 
+from .base_resource import BaseResource
+from .utils import register_crud_resource
 
 facultad_bp = Blueprint('facultad', __name__)
-facultad_mapping = FacultadMapping()
+facultad_service = FacultadService()
+facultad_schema = FacultadMapping()
 
-@facultad_bp.route('/facultad', methods=['GET'])
-def buscar_todos():
-    facultades = FacultadService.buscar_todos()
-    return facultad_mapping.dump(facultades, many=True), 200
+class FacultadResource(BaseResource):
+    def __init__(self):
+        super().__init__(
+            service=facultad_service,
+            schema=facultad_schema,
+            nombre_entidad="Facultad"
+        )
 
-@facultad_bp.route('/facultad/<hashid:id>', methods=['GET'])
-def buscar_por_id(id):
-    facultad = FacultadService.buscar_por_id(id)
-    return facultad_mapping.dump(facultad), 200
-
-@facultad_bp.route('/facultad', methods=['POST'])
-def crear():
-    facultad = facultad_mapping.load(request.get_json())
-    FacultadService.crear(facultad)
-    return jsonify("Facultad creada exitosamente"), 200
-
-@facultad_bp.route('/facultad/<hashid:id>', methods=['PUT'])
-def actualizar(id):
-    facultad = facultad_mapping.load(request.get_json())
-    FacultadService.actualizar(id, facultad)
-    return jsonify("Facultad actualizada exitosamente"), 200
-
-@facultad_bp.route('/facultad/<hashid:id>', methods=['DELETE'])
-def borrar_por_id(id):
-    FacultadService.borrar_por_id(id)
-    return jsonify("Facultad borrada exitosamente"), 200
+register_crud_resource(
+    blueprint=facultad_bp,
+    resource_class=FacultadResource,
+    view_name='facultad_api',
+    url_prefix='facultad'
+)

@@ -1,16 +1,15 @@
 from marshmallow import fields, Schema, post_load, validate
 from app.models import Plan
+from .base_mapping import BaseMapping
 
-class PlanMapping(Schema):
-    hashid = fields.String(dump_only = True)
+class PlanMapping(BaseMapping):
     nombre = fields.String(required=True, validate=validate.Length(min=1, max=50))
     fecha_inicio = fields.Date(required=True)
     fecha_fin = fields.Date(required=True)
     observacion = fields.String(validate=validate.Length(max=255), allow_none=True)
     
-    @post_load
-    def nueva_plan(self, data, **kwargs):
-        return Plan(**data)
+    def __init__(self, *args, **kwargs):
+        super().__init__(model_class=Plan,*args, **kwargs)
      
      
      

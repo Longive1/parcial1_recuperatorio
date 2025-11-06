@@ -3,32 +3,24 @@ from flask import jsonify, Blueprint, request
 from app.mapping.plan_mapping import PlanMapping
 from app.services.plan_service import PlanService
 
+from .base_resource import BaseResource
+from .utils import register_crud_resource
+
 plan_bp = Blueprint('plan', __name__)
-plan_mapping = PlanMapping()
+plan_service = PlanService()
+plan_schema = PlanMapping()
 
-@plan_bp.route('/plan', methods=['GET'])
-def buscar_todos():
-    planes = PlanService.buscar_todos()
-    return plan_mapping.dump(planes, many=True), 200
+class PlanResource(BaseResource):
+    def __init__(self):
+        super().__init__(
+            service=plan_service,
+            schema=plan_schema,
+            nombre_entidad="Plan"
+        )
 
-@plan_bp.route('/plan/<hashid:id>', methods=['GET'])
-def buscar_por_id(id):
-    plan = PlanService.buscar_por_id(id)
-    return plan_mapping.dump(plan), 200
-
-@plan_bp.route('/plan', methods=['POST'])
-def crear():
-    plan = plan_mapping.load(request.get_json())
-    PlanService.crear(plan) 
-    return jsonify("Plan creado exitosamente"), 200
-
-@plan_bp.route('/plan/<hashid:id>', methods=['PUT'])
-def actualizar_por_id(id):
-    plan = plan_mapping.load(request.get_json())
-    PlanService.actualizar(id, plan) 
-    return jsonify("Plan actualizado exitosamente"), 200
-
-@plan_bp.route('/plan/<hashid:id>', methods=['DELETE'])
-def borrar_por_id(id):
-    PlanService.borrar_por_id(id)
-    return jsonify("Plan borrado exitosamente"), 200
+register_crud_resource(
+    blueprint=plan_bp,
+    resource_class=PlanResource,
+    view_name='plan_api',
+    url_prefix='plan'
+)

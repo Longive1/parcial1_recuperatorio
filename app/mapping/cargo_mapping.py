@@ -3,15 +3,14 @@ from app.models import Cargo
 from app.mapping.categoriacargo_mapping import CategoriaCargoMapping
 from app.mapping.tipodedicacion_mapping import TipoDedicacionMapping
 from app.repositories import CategoriaCargoRepository, TipoDedicacionRepository
+from .base_mapping import BaseMapping
 
-class CargoMapping(Schema):
-    hashid = fields.String(dump_only = True)
+class CargoMapping(BaseMapping):
     nombre = fields.String(required=True, validate=validate.Length(min=1, max=50))
     puntos = fields.Integer(allow_none=True)
 
     categoria_cargo_id = fields.Integer(required=True,load_only=True)
     tipo_dedicacion_id = fields.Integer(required=True,load_only=True)
 
-    @post_load
-    def nuevo_cargo(self, data, **kwargs):
-        return Cargo(**data)
+    def __init__(self, *args, **kwargs):
+        super().__init__(model_class=Cargo,*args, **kwargs)

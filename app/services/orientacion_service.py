@@ -1,30 +1,20 @@
 from app.models import Orientacion
 from app.repositories import OrientacionRepository
+from .base_service import BaseService
 
-class OrientacionService:
-    @staticmethod
-    def crear(orientacion):
-        OrientacionRepository.crear(orientacion)
+class OrientacionService(BaseService):
 
-    @staticmethod
-    def buscar_por_id(id: int) -> Orientacion:        
-        return OrientacionRepository.buscar_por_id(id)
-    
-    @staticmethod
-    def buscar_todos() -> list[Orientacion]:
-        return OrientacionRepository.buscar_todos()
-    
-    @staticmethod
-    def actualizar(id: int, orientacion: Orientacion) -> Orientacion:
-        orientacion_existente = OrientacionRepository.buscar_por_id(id)
-        if not orientacion_existente:
+    def __init__(self):
+        repository = OrientacionRepository()
+
+        super().__init__(repository)
+
+    def actualizar(self, id: int, data: Orientacion) -> Orientacion:
+        existente = self.repository.buscar_por_id(id)
+        if not existente:
             return None
-        orientacion_existente.nombre = orientacion.nombre
-        orientacion_existente.especialidad_id = orientacion.especialidad_id
-        orientacion_existente.plan = orientacion.plan
-        orientacion_existente.materia = orientacion.materia
-        return OrientacionRepository.actualizar(orientacion_existente)
-    
-    @staticmethod
-    def borrar_por_id(id: int) -> bool:
-        return OrientacionRepository.borrar_por_id(id)
+        existente.nombre = data.nombre
+        existente.especialidad_id = data.especialidad_id
+        existente.plan_id = data.plan_id
+        existente.materia_id = data.materia_id
+        return self.repository.actualizar(existente)

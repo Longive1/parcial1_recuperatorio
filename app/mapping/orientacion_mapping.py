@@ -1,9 +1,9 @@
 from marshmallow import fields, Schema, post_load, validate
 from app.models import Orientacion
+from .base_mapping import BaseMapping
 
 
-class OrientacionMapping(Schema):
-    hashid = fields.Integer(dump_only=True)
+class OrientacionMapping(BaseMapping):
     nombre = fields.String(required=True, validate=validate.Length(min=1, max=50))
 
     especialidad_id = fields.Integer(required=True)
@@ -12,6 +12,5 @@ class OrientacionMapping(Schema):
 
     materia_id = fields.Integer(required=True)
 
-    @post_load
-    def nueva_orientacion(self, data, **kwargs):
-        return Orientacion(**data)
+    def __init__(self, *args, **kwargs):
+        super().__init__(model_class=Orientacion,*args, **kwargs)

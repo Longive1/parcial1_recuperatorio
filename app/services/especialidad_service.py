@@ -1,32 +1,20 @@
 from app.models import Especialidad
 from app.repositories import EspecialidadRepository
+from .base_service import BaseService
 
-class EspecialidadService:
+class EspecialidadService(BaseService):
 
-    @staticmethod
-    def crear(especialidad):
-        EspecialidadRepository.crear(especialidad)
+    def __init__(self):
+        repository = EspecialidadRepository()
+        super().__init__(repository)
 
-    @staticmethod
-    def buscar_por_id(id: int) -> Especialidad:
-        return EspecialidadRepository.buscar_por_id(id)
-    
-    @staticmethod
-    def buscar_todos() -> list[Especialidad]:
-        return EspecialidadRepository.buscar_todos()
-
-    @staticmethod
-    def actualizar(id: int, especialidad: Especialidad) -> Especialidad:
-        especialidad_existente = EspecialidadRepository.buscar_por_id(id)
+    def actualizar(self, id: int, data: Especialidad) -> Especialidad:
+        especialidad_existente = self.repository.buscar_por_id(id)
         if not especialidad_existente:
             return None
-        especialidad_existente.nombre = especialidad.nombre
-        especialidad_existente.letra = especialidad.letra
-        especialidad_existente.observacion = especialidad.observacion
-        especialidad_existente.tipoespecialidad = especialidad.tipoespecialidad
-        especialidad_existente.facultad = especialidad.facultad
-        return EspecialidadRepository.actualizar(especialidad_existente)
-    
-    @staticmethod
-    def borrar_por_id(id: int) -> bool:
-        return EspecialidadRepository.borrar_por_id(id)
+        especialidad_existente.nombre = data.nombre
+        especialidad_existente.letra = data.letra
+        especialidad_existente.observacion = data.observacion
+        especialidad_existente.tipoespecialidad_id = data.tipoespecialidad_id
+        especialidad_existente.facultad_id = data.facultad_id
+        return self.repository.actualizar(especialidad_existente)
